@@ -14,13 +14,24 @@ register = template.Library()
 
 
 def _preprocess_fields(form):
+    invalid_form = True if len(form.errors) > 0 else False
+
     for field in form.fields:
         name = form.fields[field].widget.__class__.__name__.lower()
         if not name.startswith("radio") and not name.startswith("checkbox"):
+
+            if invalid_form:
+                if field in form.errors:
+                    validation_state = ' is-invalid'
+                else:
+                    validation_state = ' is-valid'
+            else:
+                validation_state = ''
+
             try:
-                form.fields[field].widget.attrs["class"] += " form-control"
+                form.fields[field].widget.attrs["class"] += ' form-control' + validation_state
             except KeyError:
-                form.fields[field].widget.attrs["class"] = " form-control"
+                form.fields[field].widget.attrs["class"] = ' form-control' + validation_state
     return form
 
 
